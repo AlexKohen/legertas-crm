@@ -3,6 +3,10 @@ import { NextResponse } from "next/server";
 const sessionCookieName = "legertas_crm_session";
 const allowedEmail = "droneai@legertas.ai";
 
+// TEMPORARY PREVIEW MODE:
+// Set this to false to re-enable password authentication and protected CRM routes.
+const PREVIEW_AUTH_DISABLED = true;
+
 function base64urlToBytes(value) {
   const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
   const padded = normalized.padEnd(normalized.length + ((4 - (normalized.length % 4)) % 4), "=");
@@ -35,10 +39,14 @@ async function hasValidSession(request) {
   const token = request.cookies.get(sessionCookieName)?.value;
   const [payload, signature] = String(token || "").split(".");
 
-  if (!secret || !payload || !signature) return false;
+  if (!secret || !payload || !signature) {
+    return false;
+  }
 
   const expected = await hmac(payload, secret);
-  if (expected !== signature) return false;
+  if (expected !== signature) {
+    return false;
+  }
 
   try {
     const data = JSON.parse(new TextDecoder().decode(base64urlToBytes(payload)));
@@ -50,6 +58,17 @@ async function hasValidSession(request) {
 
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
+
+  if (PREVIEW_AUTH_DISABLED) {
+    if (pathname === "/login") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
+
+    return NextResponse.next();
+  }
 
   if (
     pathname === "/login" ||
