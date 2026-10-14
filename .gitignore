@@ -1,0 +1,5 @@
+.env*
+.credentials/
+node_modules/
+.next/
+backups/
