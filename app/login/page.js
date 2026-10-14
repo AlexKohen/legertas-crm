@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 const allowedEmail = "droneai@legertas.ai";
+const previewAuthDisabled = true;
 
 export default function LoginPage() {
   const [email, setEmail] = useState(allowedEmail);
@@ -29,6 +30,11 @@ export default function LoginPage() {
     const data = await response.json().catch(() => ({}));
     setError(data.error || "Invalid login.");
     setIsBusy(false);
+  }
+
+  if (previewAuthDisabled) {
+    if (typeof window !== "undefined") window.location.replace("/");
+    return null;
   }
 
   return (
