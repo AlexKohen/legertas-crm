@@ -42,7 +42,7 @@ export default function Page() {
   const [meta, setMeta] = useState({ statuses: [], sources: [], sales_modes: [] });
   const [deals, setDeals] = useState([]);
   const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState(undefined);
   const [form, setForm] = useState(blankDeal);
   const [note, setNote] = useState("");
   const [message, setMessage] = useState("");
@@ -71,9 +71,9 @@ export default function Page() {
     setForm({
       ...blankDeal,
       ...deal,
-      points_count: deal.points_count ?? "",
-      next_call_at: deal.next_call_at || "",
-      sales_mode: deal.sales_mode || []
+      points_count: deal?.points_count ?? "",
+      next_call_at: deal?.next_call_at || "",
+      sales_mode: deal?.sales_mode || []
     });
     setNote("");
   }
